@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>DNA Visualizer</title>
+    <style>
+        #canvas {
+            position: absolute;
+            top: 7%;
+            left: 0;
+            z-index: -1;
+        }
+
+        #buts {
+            z-index: 100000;
+            position: fixed;
+            top: 2%;
+            left: 2%;
+            width: 98%;
+            height: 3%;
+        }
+
+        #input {
+            width: 15%;
+            height: 100%;
+            transition-duration: 500ms;
+        }
+
+        #input:focus {
+            transition-duration: 1s;
+            width: 96%;
+        }
+
+        #scale {
+            height: 100%;
+            width: 2%;
+            min-width: 20px;
+        }
+        .contain-all{
+            position: fixed;
+            bottom: 3%;
+            right: 1%;
+            width: 15%;
+            border: solid;
+            border-width: 1px;
+            border-color: lightgrey;
+        }
+        .contain{
+            width:100%;
+            border-bottom: solid;
+            border-width: 1px;
+            border-color: lightgrey;
+        }
+        .left{
+            display: inline-block;
+            width: 30%;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+        }
+        .right{
+            display:inline;
+            width: 70%;
+        }
+
+    </style>
+    <script>
+        var bw = 260;
+        var bh = 102;
+        var space = 7;
+        var width = window.innerWidth
+            || document.documentElement.clientWidth
+            || document.body.clientWidth;
+
+        var height = window.innerHeight
+            || document.documentElement.clientHeight
+            || document.body.clientHeight;
+
+
+        function draw(imgsrc, x, y, w, h) {
+            var canvas = document.getElementById('canvas');
+            var img = new Image();
+            img.onload = function () {
+                canvas.getContext('2d').drawImage(img, x, y, w, h);
+            };
+            img.src = "./" + imgsrc + ".svg";
+        }
+        function init() {
+
+            var canvas = document.getElementById('canvas');
+            canvas.height = height;
+            canvas.width = width;
+
+        }
+
+        function pair(base) {
+            if (base == "a") return "t";
+            if (base == "A") return "T";
+            if (base == "T") return "A";
+            if (base == "t") return "a";
+            if (base == "g") return "c";
+            if (base == "G") return "C";
+            if (base == "c") return "g";
+            if (base == "C") return "G";
+        }
+
+        function create() {
+            var right = false;
+            scale = parseFloat(document.getElementById('scale').value);
+            document.getElementById('canvas').getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+            input = document.getElementById("input").value;
+            height = input.length * (bh / 2 + space / 2) * scale + 50*scale;
+            init();
+            space = 15;
+            i = 0;
+            var split = false;
+            for (j = 0; j < input.length; j++) {
+                if (input[j] == '-') {
+                    right = !right;
+                } else if (input[j] == ">") {
+                    split = true;
+                } else if (input[j] == "<") {
+                    split = false;
+                } else if (input[j] == " ") {
+                    i++;
+                } else if (input[j].toUpperCase() == "A" || input[j].toUpperCase() == "T" || input[j].toUpperCase() == "G" || input[j].toUpperCase() == "C") {
+                    if (input[j] == input[j].toUpperCase() && !right && !split) {
+                        draw(input[j] + "w", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, bw * scale, (bh / 2) * scale);
+                    } else if (input[j] == input[j].toUpperCase() && right && !split) {
+                        draw(pair(input[j]) + "w", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, bw * scale, (bh / 2) * scale);
+                    } else if (input[j] == input[j].toUpperCase() && !right && split) {
+                        draw(input[j].toLowerCase() + "ws", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, 1.5 * bw * scale, (bh / 2) * scale);
+                    } else if (input[j] == input[j].toUpperCase() && right && split) {
+                        draw(pair(input[j]).toLowerCase() + "ws", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, 1.5 * bw * scale, (bh / 2) * scale);
+                    } else {
+                        if (!right) {
+                            if (input[j] == "g") {
+                                draw(input[j] + "l", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, (bw / 2 - 5) * scale, (bh / 2) * scale);
+                            } else if (input[j] == "c") {
+                                draw(input[j] + "l", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, (bw / 2 - 7) * scale, (bh / 2) * scale);
+                            } else {
+                                draw(input[j] + "l", (width / 2) - (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, (bw / 2) * scale, (bh / 2) * scale);
+                            }
+                        } else {
+                            if (input[j] == "g") {
+                                draw(input[j] + "r", ((width / 2) - (bw / 2) * scale) + ((bw / 2) + 5) * scale, i * (bh / 2 + space / 2) * scale, (bw / 2 - 5) * scale, (bh / 2) * scale);
+                            } else if (input[j] == "c") {
+                                draw(input[j] + "r", ((width / 2) - (bw / 2) * scale) + ((bw / 2) + 5) * scale, i * (bh / 2 + space / 2) * scale, (bw / 2 - 7) * scale, (bh / 2) * scale);
+                            } else {
+                                draw(input[j] + "r", ((width / 2) - (bw / 2) * scale) + (bw / 2) * scale, i * (bh / 2 + space / 2) * scale, (bw / 2) * scale, (bh / 2) * scale);
+                            }
+                        }
+
+                    }
+                    i++;
+                } else if (input[j] == "1") {
+                    if (right) {
+                        if (split) {
+                            draw("cpg", ((width / 2) - ((bw / 2) - 115) * scale ) + ((bw / 2) + 102) * scale, (i * (bh / 2 + space / 2) * scale) - (8.5 * scale), (bw / 4 - 5) * scale, (150 / 2) * scale);
+                        } else {
+                            draw("cpg", ((width / 2) - ((bw / 2) + 13) * scale ) + ((bw / 2) + 102) * scale, (i * (bh / 2 + space / 2) * scale) - (8.5 * scale), (bw / 4 - 5) * scale, (150 / 2) * scale);
+                        }
+                    } else {
+                        draw("cpg", ((width / 2) - ((bw / 2) + 13) * scale ), (i * (bh / 2 + space / 2) * scale) - (8.5 * scale), (bw / 4 - 5) * scale, (150 / 2) * scale);
+                    }
+                } else if (input[j] == 2 && i == 0 && !right) {
+                    draw("bga", (width / 2) - (bw / 2) * scale, (i * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                    i++;
+                } else if (input[j] == 2 && !right) {
+                    draw("bga", (width / 2) - (bw / 2) * scale, ((i - 1) * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                } else if (input[j] == 2 && i == 0 && right) {
+                    draw("bgar", (width / 2) - (bw / 2) * scale + (bw / 2) * scale, (i * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                    i++;
+                } else if (input[j] == 2 && right) {
+                    draw("bgar", (width / 2) - (bw / 2) * scale + (bw / 2) * scale, ((i - 1) * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                } else if (input[j] == 3 && i == 0 && !right) {
+                    draw("bgb", (width / 2) - (bw / 2) * scale, (i * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                    i++;
+                } else if (input[j] == 3 && !right) {
+                    draw("bgb", (width / 2) - (bw / 2) * scale, ((i - 1) * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                } else if (input[j] == 3 && i == 0 && right) {
+                    draw("bgbr", (width / 2) - (bw / 2) * scale + (bw / 2) * scale, (i * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                    i++;
+                } else if (input[j] == 3 && right) {
+                    draw("bgbr", (width / 2) - (bw / 2) * scale + (bw / 2) * scale, ((i - 1) * (bh / 2 + space / 2 ) * scale) + (10 * scale), (bw / 2) * scale, (bh / 2) * scale);
+                } else if (input[j] == 4) {
+                    var q = i;
+                    setTimeout(function () {
+                        draw("pola", (width / 2) - (bw / 2) * scale, ((q - 1) * (bh / 2 + space / 2 ) * scale) + (4 * scale), (553 / 2) * scale, (293 / 2) * scale);
+                    }, 1);
+                } else if (input[j] == 5) {
+                    var z = i;
+                    setTimeout(function () {
+                        draw("ligase", (width / 2) - (bw / 2) * scale, ((z - 1) * (bh / 2 + space / 2 ) * scale) + (4 * scale), (700 / 2) * scale, (293 / 2) * scale);
+                    }, 1);
+                } else if (input[j] == 6) {
+                    var w = i;
+                    setTimeout(function () {
+                        if (right) {
+                            draw("tdt", (width / 2) - (bw / 2) * scale + ((bw / 2) + 90) * scale, ((w) * (bh / 2 + space / 2 ) * scale) + (4 * scale), (bw / 2) * scale, (313 / 2) * scale);
+                        } else {
+                            draw("tdt", (width / 2) - (bw / 2) * scale, ((w) * (bh / 2 + space / 2 ) * scale) + (4 * scale), (bw / 2) * scale, (313 / 2) * scale);
+                        }
+                    }, 3);
+                    i = i + 2;
+                } else if (input[j] == 7) {
+                    var p = i;
+                    setTimeout(function () {
+                        if (right) {
+                            draw("exon", (width / 2) - (bw / 2) * scale + ((bw / 2) + 90) * scale, ((p) * (bh / 2 + space / 2 ) * scale) + (4 * scale), (bw / 2) * scale, (313 / 2) * scale);
+                        } else {
+                            draw("exon", (width / 2) - (bw / 2) * scale, ((p) * (bh / 2 + space / 2 ) * scale) + (4 * scale), (bw / 2) * scale, (313 / 2) * scale);
+                        }
+                    }, 3);
+                    i = i + 2;
+                }
+            }
+
+
+        }
+        var old = "";
+        var oldScale = 0;
+        function load() {
+            current = document.getElementById("input").value;
+            scale = document.getElementById("scale").value;
+            if (!(old == current && oldScale == scale)) {
+                old = current;
+                oldScale = scale;
+                create();
+            }
+            setTimeout(load, 10);
+
+        }
+    </script>
+</head>
+<body onload="init();load()">
+<div id="buts">
+    <input type="text" onchange="create()" value="-6aaaa1" id="input">
+    <input type="text" onchange="create()" value="1" id="scale">
+</div>
+    <div class="contain-all">
+        <div class="contain">
+            <div class="left">agtc</div>
+            <div class="right">Single Stranded Base</div>
+        </div>
+        <div class="contain">
+            <div class="left">AGTC</div>
+            <div class="right">Double Stranded Base</div>
+        </div>
+        <div class="contain">
+            <div class="left">-</div>
+            <div class="right">Switch side of DNA</div>
+        </div>
+        <div class="contain">
+            <div  class="left"><script>document.write('>');</script></div>
+            <div class="right">Split DNA strands</div>
+        </div>
+        <div class="contain">
+            <div class="left"><script>document.write('>');</script> </div>
+            <div class="right">Un-Split DNA strands</div>
+        </div>
+        <div class="contain">
+            <div class="left">Space</div>
+            <div class="right">Inject break into DNA (space)</div>
+        </div>
+        <div class="contain">
+            <div class="left">1</div>
+            <div class="right">CPG Support</div>
+        </div>
+        <div class="contain">
+            <div class="left">2</div>
+            <div class="right">Blocking Group 1</div>
+        </div>
+        <div class="contain">
+            <div class="left">3</div>
+            <div class="right">Blocking Group 2</div>
+        </div>
+        <div class="contain">
+            <div class="left">4</div>
+            <div class="right">Polymerase</div>
+        </div>
+        <div class="contain">
+            <div class="left">5</div>
+            <div class="right">Ligase</div>
+        </div>
+        <div class="contain">
+            <div class="left">6</div>
+            <div class="right">Terminal Transferase</div>
+        </div>
+        <div class="contain">
+            <div class="left">7</div>
+            <div class="right">Econuclease</div>
+        </div>
+    </div>
+<canvas id="canvas"></canvas>
+
+</body>
+</html>
