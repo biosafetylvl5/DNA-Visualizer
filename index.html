@@ -83,7 +83,7 @@
             img.onload = function () {
                 canvas.getContext('2d').drawImage(img, x, y, w, h);
             };
-            img.src = "./" + imgsrc + ".svg";
+            img.src = "./" + imgsrc.toLowerCase() + ".svg";
         }
         function init() {
 
